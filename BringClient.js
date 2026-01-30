@@ -32,7 +32,7 @@ class BringClient {
         this.#insecureClient = axios.create({
             baseURL: "https://web.getbring.com/",
             headers: {
-                "x-bring-api-key": "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp"
+                "X-BRING-API-KEY": "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp"
             },
             httpsAgent: new https.Agent({
                 // This setting disables SSL certificate errors and reduces security
@@ -41,9 +41,12 @@ class BringClient {
         });
 
         this.#authenticatedClient = axios.create({
-            baseURL: "https://api.getbring.com/rest/v2/",
+            baseURL: "https://api.getbring.com/rest/",
             headers: {
-                "x-bring-api-key": "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp"
+                "X-BRING-API-KEY": "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp",
+                "X-BRING-CLIENT": "android",
+                "X-BRING-APPLICATION": "bring",
+                "X-BRING-COUNTRY": "DE"
             },
         });
 
@@ -67,7 +70,7 @@ class BringClient {
     login(email, password) {
         return this.#authenticatedClient
         .post(
-            "/bringauth",
+            "v2/bringauth",
             querystring.stringify({
             email: email,
             password: password
@@ -87,7 +90,7 @@ class BringClient {
     getLists() {
         return this.#authenticatedClient
         .get(
-            "/bringusers/" + this.userId + "/lists"
+            "bringusers/" + this.userId + "/lists"
         )
         .then((response) => {
                 // Remember the names of the Lists
@@ -106,7 +109,7 @@ class BringClient {
             listId = this.store.get("list_id_" + listName);
         }
         return this.#authenticatedClient
-        .get("/bringlists/" + listId)
+        .get("v2/bringlists/" + listId)
         .then((response) => {
                 const list = response.data;
                 if (list && list.uuid) {
@@ -163,7 +166,7 @@ class BringClient {
 
     getListDetails(listId) {
         return this.#authenticatedClient
-        .get("/bringlists/" + listId + "/details")
+        .get("bringlists/" + listId + "/details")
         .then((response) => {
             return response.data;
         }).catch(error => console.error(error));
@@ -226,7 +229,7 @@ class BringClient {
         };
         return this.#authenticatedClient
         .put(
-            "/bringlists/" + listId,
+            "v2/bringlists/" + listId,
             querystring.stringify({
             uuid: listId,
             purchase: itemName
@@ -241,7 +244,7 @@ class BringClient {
         };
         return this.#authenticatedClient
         .put(
-            "/bringlists/" + listId,
+            "v2/bringlists/" + listId,
             querystring.stringify({
             uuid: listId,
             recently: itemName
