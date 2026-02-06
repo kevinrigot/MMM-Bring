@@ -103,7 +103,7 @@ class BringClient {
         .catch((error) => console.error(error));
     }
 
-    getList(withDetails, listName) {
+    getList(withDetails, listName) {        
         let listId = this.defaultListId;
         if (!!listName) {
             listId = this.store.get("list_id_" + listName);
@@ -119,12 +119,12 @@ class BringClient {
             }
         ).then(list => {
             if (withDetails && !this.articles) {
-                return this.getArticles().then((articles) => {
+                return this.getArticles().then((articles) => {                    
                         this.articles = articles;
-                        return list;
+                        return list.items;
                 });
             } else {
-                return list;
+                return list.items;
             }
         })
         .then((list) => {
@@ -140,9 +140,9 @@ class BringClient {
                             // Translate it
                             if (
                                 this.articles &&
-                                this.articles[list.purchase[i].name] != null
+                                this.articles[list.purchase[i].itemId] != null
                             ) {
-                                list.purchase[i].name = this.articles[list.purchase[i].name];
+                                list.purchase[i].name = this.articles[list.purchase[i].itemId];
                             }
                         }
                         for (let i = 0, len = list.recently.length; i < len; i++) {
@@ -151,9 +151,9 @@ class BringClient {
                             // Translate it
                             if (
                                 this.articles &&
-                                this.articles[list.recently[i].name] != null
+                                this.articles[list.recently[i].itemId] != null
                             ) {
-                                list.recently[i].name = this.articles[list.recently[i].name];
+                                list.recently[i].name = this.articles[list.recently[i].itemId];
                             }
                         }
                         return list;
@@ -185,7 +185,7 @@ class BringClient {
     }
 
     getImageSrc(item) {
-        let name = item.name;
+        let name = item.itemId;
         if (item.details && item.details.userIconItemId) {
             name = item.details.userIconItemId;
         }
@@ -198,14 +198,14 @@ class BringClient {
             const articleKeys = Object.keys(this.articles).map(key => key.toLowerCase());
             let foundAlternativeImage = false;
             for (let i = 0, len = articleKeys.length; i < len; i++) {
-                if (item.name.toLowerCase().indexOf(articleKeys[i]) >= 0) {
+                if (item.itemId.toLowerCase().indexOf(articleKeys[i]) >= 0) {
                     name = articleKeys[i];
                     foundAlternativeImage = true;
                     break;
                 }
             }
             if (!foundAlternativeImage) {
-                name = item.name.substr(0, 1);
+                name = item.itemId.substr(0, 1);
             }
         }
         return "https://web.getbring.com/assets/images/items/" + name
